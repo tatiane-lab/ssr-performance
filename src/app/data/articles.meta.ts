@@ -1,0 +1,75 @@
+import { ArticleSummary } from './article.models';
+
+/**
+ * Metadados leves dos artigos. Compartilhados pelo bundle do navegador (home,
+ * pré-renderizada sem HTTP) e pela API Express em `server.ts`.
+ * Os corpos dos artigos ficam em `articles.content.ts` e só são importados pelo servidor.
+ */
+export const ARTICLE_SUMMARIES: readonly ArticleSummary[] = [
+  {
+    id: '1',
+    slug: 'ssr-hydration-na-pratica',
+    title: 'SSR e hidratação: o que realmente acontece no navegador',
+    excerpt: 'Do HTML pronto ao app interativo: como o Angular reaproveita o DOM do servidor sem recriá-lo.',
+    coverImage: '/img/cover-ssr-hydration.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-10-02',
+    readingMinutes: 5,
+    tags: ['SSR', 'Hydration'],
+  },
+  {
+    id: '2',
+    slug: 'hidratacao-incremental',
+    title: 'Hidratação incremental: pague apenas pelo que o usuário usa',
+    excerpt: 'Blocos @defer com hydrate on viewport, idle e interaction reduzem o JavaScript executado no load.',
+    coverImage: '/img/cover-incremental-hydration.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-10-09',
+    readingMinutes: 6,
+    tags: ['Hydration', '@defer'],
+  },
+  {
+    id: '3',
+    slug: 'defer-blocks-triggers',
+    title: '@defer na prática: triggers, placeholders e CLS zero',
+    excerpt: 'Como escolher entre idle, viewport, interaction e timer sem causar layout shift.',
+    coverImage: '/img/cover-defer-blocks.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-10-16',
+    readingMinutes: 4,
+    tags: ['@defer', 'CLS'],
+  },
+  {
+    id: '4',
+    slug: 'ng-optimized-image-lcp',
+    title: 'NgOptimizedImage e o LCP: priority, fill e sizes',
+    excerpt: 'Imagens são o LCP em quase toda página de conteúdo. Veja como o Angular ajuda a acertar.',
+    coverImage: '/img/cover-optimized-image.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-10-23',
+    readingMinutes: 4,
+    tags: ['Imagens', 'LCP'],
+  },
+  {
+    id: '5',
+    slug: 'transfer-state-http-cache',
+    title: 'TransferState e cache HTTP: nada de requisição duplicada',
+    excerpt: 'O servidor busca, o cliente reaproveita. Como o cache de transferência elimina o segundo fetch.',
+    coverImage: '/img/cover-transfer-state.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-10-30',
+    readingMinutes: 4,
+    tags: ['HTTP', 'Cache'],
+  },
+  {
+    id: '6',
+    slug: 'medindo-web-vitals',
+    title: 'Medindo Web Vitals no cliente: LCP, CLS e INP com PerformanceObserver',
+    excerpt: 'Sem bibliotecas: coleta de métricas reais com a Performance API e como interpretá-las.',
+    coverImage: '/img/cover-web-vitals.svg',
+    author: 'Tatiane Bezerra',
+    publishedAt: '2026-11-06',
+    readingMinutes: 7,
+    tags: ['Web Vitals', 'INP'],
+  },
+];

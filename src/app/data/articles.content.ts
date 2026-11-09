@@ -1,0 +1,99 @@
+import { Article } from './article.models';
+import { ARTICLE_SUMMARIES } from './articles.meta';
+
+const SECTIONS: Record<string, Article['sections']> = {
+  'ssr-hydration-na-pratica': [
+    {
+      heading: 'O problema do app renderizado só no cliente',
+      paragraphs: [
+        'Em uma SPA tradicional o navegador baixa um HTML quase vazio, executa o bundle e só então desenha a tela. O usuário olha para uma página em branco durante todo esse tempo, e crawlers que não executam JavaScript enxergam pouco conteúdo.',
+        'Com SSR o servidor devolve o HTML já renderizado. O First Contentful Paint e o LCP deixam de depender do download e da execução do JavaScript.',
+      ],
+    },
+    {
+      heading: 'O que a hidratação faz',
+      paragraphs: [
+        'Hidratar é reaproveitar o DOM entregue pelo servidor: o Angular percorre a árvore, associa componentes e listeners aos nós existentes e não recria o que já está na tela. Isso evita o flash de conteúdo e o trabalho duplicado.',
+        'Com event replay, cliques e digitação feitos antes da hidratação terminar são capturados e reexecutados depois, de modo que a interface nunca parece morta.',
+      ],
+      code: 'provideClientHydration(withEventReplay(), withIncrementalHydration())',
+    },
+  ],
+  'hidratacao-incremental': [
+    {
+      heading: 'Hidratar tudo de uma vez é caro',
+      paragraphs: [
+        'Mesmo com SSR, a hidratação clássica baixa e executa o código de toda a página. Seções abaixo da dobra, como comentários e artigos relacionados, competem com o que o usuário realmente está vendo.',
+      ],
+    },
+    {
+      heading: 'hydrate on ...',
+      paragraphs: [
+        'Blocos @defer aceitam triggers de hidratação. O HTML continua vindo do servidor, mas o JavaScript do bloco só é baixado e hidratado quando o gatilho dispara: viewport, idle, interaction, hover, timer ou uma condição própria.',
+        'Aqui no projeto, os artigos relacionados hidratam ao entrar no viewport e os comentários na primeira interação.',
+      ],
+      code: '@defer (on viewport; hydrate on viewport) {\n  <app-related [articles]="related()" />\n} @placeholder { <div class="skeleton"></div> }',
+    },
+  ],
+  'defer-blocks-triggers': [
+    {
+      heading: 'Escolhendo o trigger',
+      paragraphs: [
+        'on idle é bom para conteúdo secundário que deve estar pronto logo. on viewport serve para blocos abaixo da dobra. on interaction e on hover adiam o custo até haver intenção do usuário. on timer é útil para widgets não essenciais.',
+      ],
+    },
+    {
+      heading: 'Placeholders sem layout shift',
+      paragraphs: [
+        'O @placeholder deve ocupar a mesma altura do conteúdo final. Reserve o espaço com min-height ou aspect-ratio e o CLS permanece em zero quando o bloco carregar.',
+      ],
+    },
+  ],
+  'ng-optimized-image-lcp': [
+    {
+      heading: 'A imagem hero costuma ser o LCP',
+      paragraphs: [
+        'NgOptimizedImage com o atributo priority adiciona fetchpriority="high", desativa o lazy loading e injeta um link rel="preload" no HTML renderizado pelo servidor. O navegador começa o download da imagem antes mesmo de executar JavaScript.',
+        'Com fill dentro de um contêiner com aspect-ratio definido, o espaço é reservado e não há deslocamento de layout quando a imagem chega. O atributo sizes informa a largura real e evita baixar pixels desnecessários.',
+      ],
+      code: '<img ngSrc="/img/cover.svg" fill priority sizes="(max-width: 768px) 100vw, 800px" alt="..." />',
+    },
+  ],
+  'transfer-state-http-cache': [
+    {
+      heading: 'O segundo fetch desnecessário',
+      paragraphs: [
+        'Sem cache, o servidor busca os dados para renderizar o HTML e o cliente, ao hidratar, busca os mesmos dados de novo. É tráfego duplicado e um possível flash de conteúdo.',
+        'O provideClientHydration já inclui o cache de transferência de HttpClient: respostas GET feitas no servidor são serializadas no HTML (TransferState) e reutilizadas pelo cliente na primeira renderização.',
+      ],
+      code: 'provideHttpClient(withFetch()),\nprovideClientHydration(withEventReplay(), withIncrementalHydration())',
+    },
+    {
+      heading: 'Como verificar',
+      paragraphs: [
+        'Abra a aba Network em um artigo renderizado pelo servidor: não haverá chamadas para /api/articles durante a hidratação. O painel de métricas também conta as requisições feitas pelo cliente.',
+      ],
+    },
+  ],
+  'medindo-web-vitals': [
+    {
+      heading: 'As três métricas',
+      paragraphs: [
+        'LCP mede quando o maior elemento visível é pintado (bom: até 2,5 s). CLS soma os deslocamentos inesperados de layout (bom: até 0,1). INP mede a latência das interações do usuário (bom: até 200 ms).',
+      ],
+    },
+    {
+      heading: 'Coletando sem biblioteca',
+      paragraphs: [
+        'PerformanceObserver expõe entradas largest-contentful-paint, layout-shift e event. Para o CLS agrupamos os shifts em janelas de sessão; para o INP guardamos a pior interação identificada por interactionId.',
+        'Teste na prática: clique e digite nesta página e veja o INP no painel de métricas se atualizar em tempo real.',
+      ],
+      code: "new PerformanceObserver((list) => {\n  for (const e of list.getEntries()) { /* ... */ }\n}).observe({ type: 'largest-contentful-paint', buffered: true });",
+    },
+  ],
+};
+
+export const ARTICLES: readonly Article[] = ARTICLE_SUMMARIES.map((s) => ({
+  ...s,
+  sections: SECTIONS[s.slug] ?? [],
+}));
