@@ -69,6 +69,16 @@ Outros comandos:
 - `API_DELAY_MS=0` ajusta a latência simulada da API (padrão 60 ms).
 - Comparação manual: abra `/articles/ssr-hydration-na-pratica` e depois `?csr=1`, volte a `/metrics`.
 
+## Versão estática no GitHub Pages
+
+O GitHub Pages não executa servidor, então a versão publicada em https://tatiane-lab.github.io/ssr-performance/ é **100% estática**: todas as rotas (inclusive cada artigo) são pré-renderizadas no build, sem API Express e sem o modo `?csr=1`. O `/api/bundle` vira o arquivo estático `api/bundle`, gerado no build. A comparação SSR vs CSR ao vivo e o SSR por requisição só existem rodando o servidor localmente.
+
+```bash
+npm run build:pages   # ng build --configuration pages + scripts/build-pages.mjs [pastaDeSaida]
+```
+
+O modo SSR local não é afetado: a configuração `pages` troca arquivos via `fileReplacements` (`*.pages.ts`).
+
 ## Decisões
 
 - **API Express no próprio `server.ts`**: deixa o cache de transferência HTTP e o SSR de dados demonstráveis sem backend externo.
