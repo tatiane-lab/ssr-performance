@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:ng-ssr-performance": "node dist/ng-ssr-performance/server/server.mjs",
+    "build:pages": "ng build --configuration pages && node scripts/build-pages.mjs",
     "serve:ssr": "node dist/ng-ssr-performance/server/server.mjs"
   },
   "private": true,

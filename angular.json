@@ -41,7 +41,19 @@
               "entry": "src/server.ts"
             }
           },
-          "configurations": {
+                    "configurations": {
+            "pages": {
+              "outputMode": "static",
+              "ssr": false,
+              "baseHref": "/ssr-performance/",
+              "outputPath": "dist/pages",
+              "outputHashing": "all",
+              "fileReplacements": [
+                { "replace": "src/app/app.routes.server.ts", "with": "src/app/app.routes.server.pages.ts" },
+                { "replace": "src/app/core/articles.service.ts", "with": "src/app/core/articles.service.pages.ts" },
+                { "replace": "src/app/core/deploy.ts", "with": "src/app/core/deploy.pages.ts" }
+              ]
+            },
             "production": {
               "budgets": [
                 {

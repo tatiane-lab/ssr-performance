@@ -14,6 +14,7 @@ import {
   VitalSnapshot,
   WebVitalsService,
 } from '../../core/web-vitals.service';
+import { STATIC_DEPLOY } from '../../core/deploy';
 import { REFERENCE_RUNS } from './reference-runs';
 
 interface BundleFile {
@@ -115,9 +116,19 @@ const RATING_LABEL: Record<Rating, string> = {
         O mesmo build serve as duas versões: <code>?csr=1</code> entrega apenas o shell do cliente, sem HTML
         renderizado no servidor. Abra cada uma, volte aqui e compare as medições salvas neste navegador.
       </p>
+      @if (staticDeploy) {
+        <p class="notice">
+          Esta versão publicada no GitHub Pages é <strong>100% estática</strong>: todas as páginas foram
+          pré-renderizadas no build e não há servidor Node, API Express nem modo <code>?csr=1</code>. A comparação
+          SSR vs CSR ao vivo só funciona rodando o servidor SSR localmente (veja o README); aqui valem as
+          medições de referência e as medições salvas neste navegador.
+        </p>
+      }
       <div class="actions">
-        <a class="btn primary" href="/articles/ssr-hydration-na-pratica">Abrir artigo em SSR</a>
-        <a class="btn" href="/articles/ssr-hydration-na-pratica?csr=1">Abrir artigo em CSR</a>
+        <a class="btn primary" href="articles/ssr-hydration-na-pratica">Abrir artigo{{ staticDeploy ? '' : ' em SSR' }}</a>
+        @if (!staticDeploy) {
+          <a class="btn" href="articles/ssr-hydration-na-pratica?csr=1">Abrir artigo em CSR</a>
+        }
       </div>
 
       <div class="compare">
@@ -165,7 +176,7 @@ const RATING_LABEL: Record<Rating, string> = {
             }
           </ul>
         } @else {
-          <p class="notice">Sem dados de bundle: execute o build de produção e o servidor SSR para ver os tamanhos reais.</p>
+          <p class="notice">{{ staticDeploy ? 'Sem dados de bundle neste build estático.' : 'Sem dados de bundle: execute o build de produção e o servidor SSR para ver os tamanhos reais.' }}</p>
         }
       } @else {
         <p class="notice">Carregando tamanhos…</p>
@@ -263,6 +274,8 @@ export class Metrics {
     });
   });
 
+  protected readonly staticDeploy = STATIC_DEPLOY;
+
   constructor() {
     inject(SeoService).update({
       title: 'Métricas',
@@ -271,7 +284,7 @@ export class Metrics {
     });
     afterNextRender(() => {
       this.vitals.countApiRequests();
-      this.http.get<BundleInfo>('/api/bundle').subscribe({
+      this.http.get<BundleInfo>('api/bundle').subscribe({
         next: (b) => this.bundle.set(b),
         error: () => this.bundle.set({ files: [], initialRaw: 0, initialGzip: 0 }),
       });
